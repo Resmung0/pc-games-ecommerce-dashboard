@@ -1,0 +1,6 @@
+data
+docs
+logs
+.env
+notebooks
+poetry.lock

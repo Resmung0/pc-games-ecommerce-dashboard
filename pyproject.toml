@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "pc-games-e-commerce"
+version = "0.1.0"
+description = "Analysis of PC games e-commerce around brazilian regions"
+authors = ["Marcos Gabriel <mg.21191077@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+tqdm = "^4.66.1"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.2.0"
+pylint = "^2.17.0"
+ipykernel = "^6.25.2"
+commitizen = "^2.42.1"
+
+[tool.poetry.group.web-scrapping.dependencies]
+scrapeops-scrapy = "^0.5.3"
+beautifulsoup4 = "^4.12.2"
+scrapy = "^2.11.0"
+scrapy-user-agents = "^0.1.1"
+
+[tool.poetry.group.etl.dependencies]
+pandas = "^2.1.1"
+dagster = "^1.4.17"
+dagster-webserver = "^1.4.17"
+
+[tool.poetry.group.test.dependencies]
+pytest = "~7.2.2"
+pandera = "^0.15.1"
+hypothesis = "^6.76.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
