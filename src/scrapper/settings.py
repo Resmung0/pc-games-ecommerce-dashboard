@@ -66,6 +66,7 @@ EXTENSIONS = {
 ITEM_PIPELINES = {
    "src.scrapper.pipelines.DropNotGameItemPipeline": 300,
    "src.scrapper.pipelines.CorrectItemPipeline": 301,
+   "src.scrapper.pipelines.DropUnavailableItemPipeline": 302,
 }
 FEEDS = {
    'data/raw/%(name)s.csv': {'format': 'csv', 'encoding': 'utf8', 'overwrite': True}

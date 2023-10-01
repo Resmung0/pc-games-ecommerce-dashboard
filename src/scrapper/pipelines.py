@@ -11,11 +11,20 @@ class DropNotGameItemPipeline:
     def process_item(self, item: Item, spider: Spider) -> Item:
         adapter = ItemAdapter(item)
         
-        if adapter['drm'] not in self.not_allowed_drm:
-            if adapter['title'] not in self.not_allowed_titles:
-                spider.logger.info('Item is a game.')
-                return adapter.item
-        raise DropItem(f"Removing item {adapter['title']} for not be a game!")
+        if 'drm' in adapter:
+            if adapter['drm'] not in self.not_allowed_drm:
+                if adapter['title'] not in self.not_allowed_titles:
+                    spider.logger.info('Item is a game.')
+                    return adapter.item
+            raise DropItem(f"Removing item {adapter['title']} for not be a game!")
+        return adapter.item
+
+class DropUnavailableItemPipeline:
+    def process_item(self, item: Item, spider: Spider) -> Item:
+        adapter = ItemAdapter(item)
+        if adapter['price'] == 'Unavailable':
+            raise DropItem(f"Removing item {adapter['title']} for being unavailable!")
+        return adapter.item
 
 class CorrectItemPipeline:
     def __init__(self) -> None:
@@ -45,18 +54,21 @@ class CorrectItemPipeline:
         # Correct "release_dates" column
         for title, release_date in self.release_dates_to_correct.items():
             if adapter['title'] == title:
-                adapter['release_date'] = release_date
+                if 'release_date' in adapter:
+                    adapter['release_date'] = release_date
         
         # Correct "drm" column
-        for old_value, new_value in self.drms_to_correct.items():
-            if adapter['drm'] == old_value:
-                adapter['drm'] = new_value
-        if adapter['drm'] == 'Windows':
-            adapter['os'], adapter['drm'] = 'Windows', nan
+        if 'drm' in adapter:
+            for old_value, new_value in self.drms_to_correct.items():
+                if adapter['drm'] == old_value:
+                    adapter['drm'] = new_value
+            if adapter['drm'] == 'Windows':
+                adapter['os'], adapter['drm'] = 'Windows', nan
         
         # Correct "os" column
-        if adapter['os'] == 'Windows,Xbox Series S|X':
-            adapter['os'] = 'Windows'
+        if 'os' in adapter:
+            if adapter['os'] == 'Windows,Xbox Series S|X':
+                adapter['os'] = 'Windows'
         
         return adapter.item
 

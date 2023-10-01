@@ -1,6 +1,11 @@
+# Folders
 data
 docs
 logs
-.env
 notebooks
+
+# Enviroments
+.env
 poetry.lock
+poetry.toml
+__pycache__
