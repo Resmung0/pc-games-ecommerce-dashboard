@@ -34,6 +34,12 @@ pytest = "~7.2.2"
 pandera = "^0.15.1"
 hypothesis = "^6.76.0"
 
+[tool.commitizen]
+name = "cz_conventional_commits"
+update_changelog_on_bump = true
+version_provider = "poetry"
+version = "0.1.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
