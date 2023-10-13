@@ -3,6 +3,7 @@ data
 docs
 logs
 notebooks
+assets
 
 # Enviroments
 .env
