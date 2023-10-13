@@ -5,24 +5,33 @@ from scrapy.exceptions import DropItem
 
 class DropNotGameItemPipeline:
     def __init__(self) -> None:
-        self.not_allowed_titles = ['NoPing - 30 days', 'The Crown Stones: Mirrah - DEMO']
-        self.not_allowed_drm = ['Microsoft - Office']
+        self.not_allowed_titles = [
+            'NoPing - 30 days',
+            'The Crown Stones: Mirrah - DEMO',
+            'Tomb Raider Collection',
+            
+        ]
+        self.not_allowed_drms = ['Microsoft - Office']
         
     def process_item(self, item: Item, spider: Spider) -> Item:
         adapter = ItemAdapter(item)
         
         if 'drm' in adapter:
-            if adapter['drm'] not in self.not_allowed_drm:
-                if adapter['title'] not in self.not_allowed_titles:
-                    spider.logger.info('Item is a game.')
-                    return adapter.item
-            raise DropItem(f"Removing item {adapter['title']} for not be a game!")
+            for not_allowed_drm in self.not_allowed_drms:
+                if not_allowed_drm in adapter['drm']:
+                    raise DropItem(f"Removing item {adapter['title']} for not be a game!")
+            
+        for not_allowed_title in self.not_allowed_titles:
+            if not_allowed_title in adapter['title']:
+                raise DropItem(f"Removing item {adapter['title']} for not be a game!")
+
+        spider.logger.info('Item is a game.')
         return adapter.item
 
 class DropUnavailableItemPipeline:
     def process_item(self, item: Item, spider: Spider) -> Item:
         adapter = ItemAdapter(item)
-        if adapter['price'] == 'Unavailable':
+        if 'Unavailable' in adapter['price']:
             raise DropItem(f"Removing item {adapter['title']} for being unavailable!")
         return adapter.item
 
@@ -51,24 +60,34 @@ class CorrectItemPipeline:
     def process_item(self, item: Item, spider: Spider) -> Item:
         adapter = ItemAdapter(item)
         
-        # Correct "release_dates" column
+        # Correct "release_date" column
         for title, release_date in self.release_dates_to_correct.items():
-            if adapter['title'] == title:
+            if title in adapter['title']:
                 if 'release_date' in adapter:
-                    adapter['release_date'] = release_date
+                    adapter['release_date'].clear()
+                    adapter['release_date'].append(release_date)
         
         # Correct "drm" column
         if 'drm' in adapter:
             for old_value, new_value in self.drms_to_correct.items():
-                if adapter['drm'] == old_value:
-                    adapter['drm'] = new_value
-            if adapter['drm'] == 'Windows':
-                adapter['os'], adapter['drm'] = 'Windows', nan
+                if old_value in adapter['drm']:
+                    adapter['drm'].remove(old_value)
+                    adapter['drm'].append(new_value)
+
+            if 'Windows' in adapter['drm']:
+                adapter['os'] = ['Windows']
+                adapter['drm'].clear()
+                adapter['drm'].append(nan)
         
         # Correct "os" column
         if 'os' in adapter:
-            if adapter['os'] == 'Windows,Xbox Series S|X':
-                adapter['os'] = 'Windows'
+            if 'Xbox Series S|X' in adapter['os']:
+                adapter['os'].remove('Xbox Series S|X')
+        
+        # Correct "price" column
+        price = adapter['price'][0].replace('R$', '')
+        price = price.replace(',', '.').replace('Free', '0')
+        adapter['price'] = [price.strip()]
         
         return adapter.item
 

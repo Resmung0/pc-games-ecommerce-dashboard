@@ -6,8 +6,8 @@ SCRAPEOPS_API_KEY = environ['SCRAPEOPS_API_KEY']
 
 BOT_NAME = "pc_games_ecommerce"
 
-SPIDER_MODULES = ["src.scrapper.spiders"]
-NEWSPIDER_MODULE = "src.scrapper.spiders"
+SPIDER_MODULES = ["src.etl.web_scrapping.spiders"]
+NEWSPIDER_MODULE = "src.etl.web_scrapping.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -64,12 +64,12 @@ EXTENSIONS = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "src.scrapper.pipelines.DropNotGameItemPipeline": 300,
-   "src.scrapper.pipelines.CorrectItemPipeline": 301,
-   "src.scrapper.pipelines.DropUnavailableItemPipeline": 302,
+   "src.etl.web_scrapping.pipelines.DropNotGameItemPipeline": 300,
+   "src.etl.web_scrapping.pipelines.DropUnavailableItemPipeline": 301,
+   "src.etl.web_scrapping.pipelines.CorrectItemPipeline": 302,
 }
 FEEDS = {
-   'data/raw/%(name)s.csv': {'format': 'csv', 'encoding': 'utf8', 'overwrite': True}
+   'data/raw/%(name)s.json': {'format': 'jsonlines', 'encoding': 'utf8', 'overwrite': True}
 }
 LOG_FILE = 'logs/scrapping.log'
 LOG_FILE_APPEND = False
